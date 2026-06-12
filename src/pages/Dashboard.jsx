@@ -11,6 +11,9 @@ import {
   IndianRupee,
 } from "lucide-react";
 import { getDashboardStats, getRevenueDetails } from "../api/admin";
+import LiveActivity from "../components/LiveActivity";
+
+const STATS_REFRESH_MS = 20000; // KPIs auto-refresh while you're logged in
 
 const inr = (n) =>
   "₹" +
@@ -48,13 +51,23 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getDashboardStats(), getRevenueDetails()])
-      .then(([s, r]) => {
-        setStats(s);
-        setRevenue(r);
-      })
-      .catch((e) => toast.error(e.message || "Failed to load stats"))
-      .finally(() => setLoading(false));
+    let alive = true;
+    const load = (showToast) =>
+      Promise.all([getDashboardStats(), getRevenueDetails()])
+        .then(([s, r]) => {
+          if (!alive) return;
+          setStats(s);
+          setRevenue(r);
+        })
+        .catch((e) => showToast && toast.error(e.message || "Failed to load stats"))
+        .finally(() => alive && setLoading(false));
+
+    load(true); // initial
+    const timer = setInterval(() => load(false), STATS_REFRESH_MS); // live refresh
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
   }, []);
 
   return (
@@ -89,23 +102,28 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {CARDS.map(({ key, label, icon: Icon, color }) => (
-              <div
-                key={key}
-                className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
-              >
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:col-span-2 lg:grid-cols-3 lg:content-start">
+              {CARDS.map(({ key, label, icon: Icon, color }) => (
                 <div
-                  className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg text-white ${color}`}
+                  key={key}
+                  className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100"
                 >
-                  <Icon size={18} />
+                  <div
+                    className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg text-white ${color}`}
+                  >
+                    <Icon size={18} />
+                  </div>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {stats?.[key] ?? 0}
+                  </div>
+                  <div className="text-xs text-slate-500">{label}</div>
                 </div>
-                <div className="text-2xl font-bold text-slate-900">
-                  {stats?.[key] ?? 0}
-                </div>
-                <div className="text-xs text-slate-500">{label}</div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Live activity feed — auto-updates while you're logged in */}
+            <LiveActivity />
           </div>
         </>
       )}

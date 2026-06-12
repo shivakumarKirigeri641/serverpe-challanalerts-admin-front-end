@@ -21,6 +21,10 @@ export const getRevenueDetails = () =>
 export const getAnalytics = () =>
   request(api.get("/analytics")).then((r) => r.data);
 
+/* Live activity feed — poll with the last-seen id for near-real-time updates. */
+export const getRecentActivity = (after = 0) =>
+  request(api.get(`/activity/recent?after=${after || 0}`)).then((r) => r.data);
+
 /* ------------------------------- resources ------------------------------- */
 export const getResources = () =>
   request(api.get("/resources")).then((r) => r.data || []);

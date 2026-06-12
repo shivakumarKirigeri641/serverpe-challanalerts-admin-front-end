@@ -54,6 +54,19 @@ export default function Analytics() {
 
   const k = a.kpis || {};
   const r = a.revenue || {};
+  const ext = a.external_api || {};
+  const notif = a.notification || {};
+  const messagesSent = (notif.by_channel || []).reduce(
+    (s, c) => s + (c.sent || 0),
+    0,
+  );
+  const byKind = notif.by_kind || [];
+  const kindSum = (pred) =>
+    byKind.filter(pred).reduce((s, x) => s + (x.count || 0), 0);
+  const vdhSent = kindSum((x) => String(x.kind).startsWith("VDH"));
+  const subAlerts = kindSum((x) => String(x.kind).startsWith("SUB_"));
+  const docAlerts = kindSum((x) => String(x.kind).startsWith("DOC_"));
+  const otpSent = kindSum((x) => String(x.kind) === "OTP");
 
   return (
     <div className="space-y-5">
@@ -159,6 +172,91 @@ export default function Analytics() {
               label: d.status,
               value: d.count,
             }))}
+          />
+        </Card>
+      </div>
+
+      {/* ─────────────── Cost & operations (admin-only spend) ─────────────── */}
+      <div className="pt-2">
+        <h2 className="text-lg font-bold text-slate-900">Cost &amp; operations</h2>
+        <p className="text-sm text-slate-500">
+          External API spend (RC ≈ ₹2.9/call) and notification spend
+          (WhatsApp ₹0.118 · SMS ₹0.25).
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Kpi icon={Radio} label="API calls (today)" value={ext.today?.calls ?? 0} color="bg-sky-500" />
+        <Kpi icon={IndianRupee} label="API cost (today)" value={inr2(ext.today?.cost)} color="bg-rose-500" />
+        <Kpi icon={Receipt} label="Notif. spend (total)" value={inr2(notif.total_cost)} color="bg-amber-600" />
+        <Kpi icon={Wallet} label="Messages sent" value={messagesSent} color="bg-emerald-600" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Kpi icon={BadgeCheck} label="VDH reports sent" value={vdhSent} color="bg-fuchsia-500" />
+        <Kpi icon={Receipt} label="Subscription alerts" value={subAlerts} color="bg-orange-500" />
+        <Kpi icon={FileWarning} label="Document alerts" value={docAlerts} color="bg-amber-500" />
+        <Kpi icon={Radio} label="OTPs sent" value={otpSent} color="bg-blue-500" />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card title="Subscriptions by type" subtitle="Trial vs paid">
+          <HBarChart
+            data={(a.subscriptions_by_type || []).map((d) => ({
+              label: d.type,
+              value: d.count,
+            }))}
+          />
+        </Card>
+        <Card title="External API calls" subtitle="Last 14 days">
+          <BarChart
+            data={(ext.by_day || []).map((d) => ({
+              label: d.day?.slice(5),
+              value: d.calls,
+            }))}
+          />
+        </Card>
+        <Card title="External API cost by day" subtitle="₹ (RC ≈ ₹2.9/call)">
+          <LineChart
+            data={(ext.by_day || []).map((d) => ({
+              label: d.day?.slice(5),
+              value: d.cost,
+            }))}
+            format={(v) => inr(v)}
+          />
+        </Card>
+        <Card title="External API by type" subtitle="Calls (label shows ₹ all-time)">
+          <HBarChart
+            data={(ext.by_name || []).map((d) => ({
+              label: `${d.api_name} (₹${d.cost})`,
+              value: d.calls,
+            }))}
+          />
+        </Card>
+        <Card title="Notification cost by channel" subtitle="₹ spent">
+          <HBarChart
+            data={(notif.by_channel || []).map((d) => ({
+              label: d.channel,
+              value: d.cost,
+            }))}
+            format={(v) => inr2(v)}
+          />
+        </Card>
+        <Card title="Messages by type" subtitle="Top message kinds (count)">
+          <HBarChart
+            data={(notif.by_kind || []).map((d) => ({
+              label: d.kind,
+              value: d.count,
+            }))}
+          />
+        </Card>
+        <Card title="Notification spend by day" subtitle="₹ last 14 days">
+          <LineChart
+            data={(notif.cost_by_day || []).map((d) => ({
+              label: d.day?.slice(5),
+              value: d.cost,
+            }))}
+            format={(v) => inr2(v)}
           />
         </Card>
       </div>
