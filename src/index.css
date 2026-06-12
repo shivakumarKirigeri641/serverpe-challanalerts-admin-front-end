@@ -1,6 +1,114 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ════════════════ Xan CRM theme (scoped to .xan) ════════════════ */
+.xan {
+  --xbg: #0d0d0d;
+  --xpanel: #161616;
+  --xelev: #1c1c1c;
+  --xborder: #222222;
+  --xtext: #f1f5f9;
+  --xmuted: #94a3b8;
+  --xblue: #3b82f6;
+  --xemerald: #34d399;
+  --xamber: #fbbf24;
+  --xrose: #fb7185;
+  --xease: cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  background: var(--xbg);
+  color: var(--xtext);
+  min-height: 100%;
+}
+.xan[data-theme="light"] {
+  --xbg: #f8fafc;
+  --xpanel: #ffffff;
+  --xelev: #f1f5f9;
+  --xborder: #e2e8f0;
+  --xtext: #0f172a;
+  --xmuted: #64748b;
+}
+.xmono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-feature-settings: "tnum";
+}
+
+/* spotlight follows the cursor (--mx/--my set by JS) */
+.xspot {
+  position: relative;
+}
+.xspot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(59, 130, 246, 0.08) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.45s var(--xease);
+  pointer-events: none;
+}
+.xspot:hover::before {
+  opacity: 1;
+}
+
+/* status dot ping */
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 var(--dot, rgba(52, 211, 153, 0.5));
+    opacity: 1;
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);
+    opacity: 0.7;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    opacity: 1;
+  }
+}
+.dot-pulse {
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+/* entrance */
+@keyframes xrise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.xrise {
+  animation: xrise 0.5s var(--xease) both;
+}
+
+/* custom checkbox */
+.xcheck {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #333333;
+  border: 1px solid var(--xborder);
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s var(--xease);
+}
+.xan[data-theme="light"] .xcheck {
+  background: #e2e8f0;
+}
+.xcheck[data-checked="true"] {
+  background: var(--xblue);
+  border-color: var(--xblue);
+}
 
 html,
 body,

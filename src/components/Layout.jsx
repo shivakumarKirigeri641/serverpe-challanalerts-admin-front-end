@@ -10,6 +10,7 @@ import {
   X,
   Lock,
   UserPlus,
+  Receipt,
 } from "lucide-react";
 import { getResources, logout } from "../api/admin";
 
@@ -93,6 +94,13 @@ export default function Layout() {
           onClick={() => setOpen(false)}
         >
           <UserPlus size={18} /> Bulk onboarding
+        </NavLink>
+        <NavLink
+          to="/invoices"
+          className={linkClass}
+          onClick={() => setOpen(false)}
+        >
+          <Receipt size={18} /> Invoices
         </NavLink>
         {groupNames.map((group) => (
           <div key={group}>
