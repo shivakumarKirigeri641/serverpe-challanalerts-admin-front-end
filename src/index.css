@@ -22,3 +22,16 @@ body {
   background: #cbd5e1;
   border-radius: 9999px;
 }
+
+/* Shared form/button styles (bulk onboarding + future forms). */
+@layer components {
+  .adm-input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-brand-600 focus:ring-1 focus:ring-brand-600 disabled:bg-slate-100;
+  }
+  .adm-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50;
+  }
+  .adm-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50;
+  }
+}

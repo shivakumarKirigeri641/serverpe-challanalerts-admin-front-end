@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Lock,
+  UserPlus,
 } from "lucide-react";
 import { getResources, logout } from "../api/admin";
 
@@ -85,6 +86,13 @@ export default function Layout() {
           onClick={() => setOpen(false)}
         >
           <BarChart3 size={18} /> Analytics
+        </NavLink>
+        <NavLink
+          to="/bulk-add"
+          className={linkClass}
+          onClick={() => setOpen(false)}
+        >
+          <UserPlus size={18} /> Bulk onboarding
         </NavLink>
         {groupNames.map((group) => (
           <div key={group}>

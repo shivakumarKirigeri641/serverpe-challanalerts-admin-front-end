@@ -25,6 +25,24 @@ export const getAnalytics = () =>
 export const getRecentActivity = (after = 0) =>
   request(api.get(`/activity/recent?after=${after || 0}`)).then((r) => r.data);
 
+/* ----------------------------- bulk onboarding --------------------------- */
+export const bulkSendOtp = (mobile_number) =>
+  request(api.post("/bulk/send-otp", { mobile_number }));
+export const bulkCreateUser = (payload) =>
+  request(api.post("/bulk/create-user", payload)).then((r) => r.data);
+export const bulkAddVehicle = (fk_users, vehicle_number) =>
+  request(api.post("/bulk/add-vehicle", { fk_users, vehicle_number })).then(
+    (r) => r.data,
+  );
+export const bulkRemoveVehicle = (fk_users, rc_id) =>
+  request(api.post("/bulk/remove-vehicle", { fk_users, rc_id })).then(
+    (r) => r.data,
+  );
+export const bulkCreateOrder = (fk_users) =>
+  request(api.post("/bulk/create-order", { fk_users })).then((r) => r.data);
+export const bulkVerifyPayment = (payload) =>
+  request(api.post("/bulk/verify-payment", payload)).then((r) => r.data);
+
 /* ------------------------------- resources ------------------------------- */
 export const getResources = () =>
   request(api.get("/resources")).then((r) => r.data || []);
