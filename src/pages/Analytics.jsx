@@ -12,6 +12,8 @@ import {
   WalletCards,
   Plus,
   Loader2,
+  Eye,
+  MessageCircle,
 } from "lucide-react";
 import { getAnalytics, rechargeWallet, rechargeSmsWallet } from "../api/admin";
 import { Card, BarChart, HBarChart, LineChart } from "../components/Charts";
@@ -25,6 +27,26 @@ const inr2 = (n) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+
+// Precise per-unit cost — up to 3 decimals, trailing zeros trimmed
+// (₹0.118, ₹0.25, ₹2.91) so the WhatsApp rate isn't rounded to ₹0.12.
+const inrCost = (n) =>
+  "₹" + (Number(n) || 0).toFixed(3).replace(/\.?0+$/, "");
+
+// Friendly names for the page paths reported by the /track beacon.
+const PAGE_NAMES = {
+  "/": "Landing",
+  "/subscribe": "Subscribe",
+  "/dashboard": "Dashboard",
+  "/feedback": "Feedback",
+  "/terms": "Terms",
+  "/privacy": "Privacy",
+  "/consent-policy": "Consent",
+  "/refund-policy": "Refund",
+  "/liabilities-policy": "Liabilities",
+  "/exchange-vehicle-policy": "Exchange vehicle",
+};
+const pageLabel = (p) => PAGE_NAMES[p] || p || "(unknown)";
 
 function Kpi({ icon: Icon, label, value, color }) {
   return (
@@ -59,6 +81,7 @@ export default function Analytics() {
   const r = a.revenue || {};
   const ext = a.external_api || {};
   const notif = a.notification || {};
+  const pv = a.page_views || {};
   const messagesSent = (notif.by_channel || []).reduce(
     (s, c) => s + (c.sent || 0),
     0,
@@ -90,6 +113,7 @@ export default function Analytics() {
         <Kpi icon={Wallet} label="Captured Payments" value={k.captured_payments ?? 0} color="bg-teal-500" />
         <Kpi icon={Receipt} label="Open Queries" value={k.open_queries ?? 0} color="bg-rose-500" />
         <Kpi icon={IndianRupee} label="Turnover (incl GST)" value={inr(r.total_with_gst)} color="bg-emerald-600" />
+        <Kpi icon={Eye} label="Page views (today)" value={pv.today ?? 0} color="bg-brand-600" />
       </div>
 
       {/* Revenue breakdown */}
@@ -177,6 +201,22 @@ export default function Analytics() {
             }))}
           />
         </Card>
+        <Card title="Page views by day" subtitle="/track beacon · last 14 days">
+          <LineChart
+            data={(pv.by_day || []).map((d) => ({
+              label: d.day?.slice(5),
+              value: d.views,
+            }))}
+          />
+        </Card>
+        <Card title="Top pages viewed" subtitle="All-time visits per page">
+          <HBarChart
+            data={(pv.by_page || []).map((d) => ({
+              label: pageLabel(d.page),
+              value: d.views,
+            }))}
+          />
+        </Card>
       </div>
 
       {/* ─────────────── Cost & operations (admin-only spend) ─────────────── */}
@@ -191,7 +231,7 @@ export default function Analytics() {
       </div>
 
       {/* Provider wallets — recharged by admin, auto-deducted per usage. */}
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
         <WalletCard
           title="External API wallet"
           initialBalance={ext.wallet_balance}
@@ -205,6 +245,12 @@ export default function Analytics() {
           perCost={notif.per_sms_cost || 0.25}
           perUnit="SMS"
           onRecharge={rechargeSmsWallet}
+        />
+        <SpendCard
+          title="WhatsApp spend"
+          sent={notif.whatsapp?.sent}
+          cost={notif.whatsapp?.cost}
+          perMessage={notif.whatsapp?.per_message || 0.118}
         />
       </div>
 
@@ -329,7 +375,7 @@ function WalletCard({ title, initialBalance, perCost, perUnit, onRecharge }) {
             {inr2(balance)}
           </div>
           <div className="text-[11px] text-subtle">
-            Deducts <span className="font-semibold text-ink">{inr2(cost)}</span> per{" "}
+            Deducts <span className="font-semibold text-ink">{inrCost(cost)}</span> per{" "}
             {perUnit} · ≈ {Math.max(0, Math.floor(balance / cost))} {perUnit}s left
           </div>
         </div>
@@ -365,6 +411,33 @@ function WalletCard({ title, initialBalance, perCost, perUnit, onRecharge }) {
           Recharge
         </button>
       </div>
+    </div>
+  );
+}
+
+// WhatsApp (Meta) is post-paid — show accrued spend, no balance/recharge.
+function SpendCard({ title, sent, cost, perMessage }) {
+  return (
+    <div className="surface-pad anim-fade-up flex flex-wrap items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <span
+          className="grid h-11 w-11 place-items-center rounded-xl"
+          style={{ background: "#D4F1E0", color: "#36B76B" }}
+        >
+          <MessageCircle size={20} />
+        </span>
+        <div>
+          <div className="text-[12px] font-medium text-body">{title}</div>
+          <div className="metric-headline">{inr2(cost)}</div>
+          <div className="text-[11px] text-subtle">
+            {Number(sent || 0).toLocaleString("en-IN")} messages ·{" "}
+            <span className="font-semibold text-ink">{inrCost(perMessage)}</span> each
+          </div>
+        </div>
+      </div>
+      <span className="rounded-full bg-hover px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-subtle">
+        Post-paid · accrued
+      </span>
     </div>
   );
 }
