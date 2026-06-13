@@ -26,6 +26,12 @@ export const getDashboardOverview = () =>
 export const getAnalytics = () =>
   request(api.get("/analytics")).then((r) => r.data);
 
+/* Recharge the provider wallets (adds to the existing balance). */
+export const rechargeWallet = (amount) =>
+  request(api.post("/wallet/recharge", { amount })).then((r) => r.data);
+export const rechargeSmsWallet = (amount) =>
+  request(api.post("/wallet/sms/recharge", { amount })).then((r) => r.data);
+
 /* Live activity feed — poll with the last-seen id for near-real-time updates. */
 export const getRecentActivity = (after = 0) =>
   request(api.get(`/activity/recent?after=${after || 0}`)).then((r) => r.data);

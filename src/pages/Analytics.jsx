@@ -9,8 +9,11 @@ import {
   Wallet,
   Receipt,
   IndianRupee,
+  WalletCards,
+  Plus,
+  Loader2,
 } from "lucide-react";
-import { getAnalytics } from "../api/admin";
+import { getAnalytics, rechargeWallet, rechargeSmsWallet } from "../api/admin";
 import { Card, BarChart, HBarChart, LineChart } from "../components/Charts";
 
 const inr = (n) =>
@@ -187,6 +190,24 @@ export default function Analytics() {
         </p>
       </div>
 
+      {/* Provider wallets — recharged by admin, auto-deducted per usage. */}
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <WalletCard
+          title="External API wallet"
+          initialBalance={ext.wallet_balance}
+          perCost={ext.per_call_cost || 2.91}
+          perUnit="external call"
+          onRecharge={rechargeWallet}
+        />
+        <WalletCard
+          title="SMS wallet"
+          initialBalance={notif.sms_wallet_balance}
+          perCost={notif.per_sms_cost || 0.25}
+          perUnit="SMS"
+          onRecharge={rechargeSmsWallet}
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi icon={Radio} label="API calls (today)" value={ext.today?.calls ?? 0} color="bg-sky-500" />
         <Kpi icon={IndianRupee} label="API cost (today)" value={inr2(ext.today?.cost)} color="bg-rose-500" />
@@ -261,6 +282,88 @@ export default function Analytics() {
             format={(v) => inr2(v)}
           />
         </Card>
+      </div>
+    </div>
+  );
+}
+
+function WalletCard({ title, initialBalance, perCost, perUnit, onRecharge }) {
+  const cost = Number(perCost) || 0.01;
+  const [balance, setBalance] = useState(Number(initialBalance || 0));
+  const [amount, setAmount] = useState("");
+  const [busy, setBusy] = useState(false);
+  const low = balance < cost * 20;
+
+  const add = async () => {
+    const amt = Number(amount);
+    if (!Number.isFinite(amt) || amt <= 0)
+      return toast.error("Enter a valid amount greater than 0");
+    setBusy(true);
+    try {
+      const data = await onRecharge(amt);
+      setBalance(data.balance);
+      setAmount("");
+      toast.success(`Added ${inr2(amt)} · new balance ${inr2(data.balance)}`);
+    } catch (e) {
+      toast.error(e.message || "Recharge failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="surface-pad anim-fade-up flex flex-wrap items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <span
+          className="grid h-11 w-11 place-items-center rounded-xl"
+          style={{
+            background: low ? "#FEF2F2" : "#D4F1E0",
+            color: low ? "#EF4444" : "#36B76B",
+          }}
+        >
+          <WalletCards size={20} />
+        </span>
+        <div>
+          <div className="text-[12px] font-medium text-body">{title}</div>
+          <div className="metric-headline" style={low ? { color: "#EF4444" } : undefined}>
+            {inr2(balance)}
+          </div>
+          <div className="text-[11px] text-subtle">
+            Deducts <span className="font-semibold text-ink">{inr2(cost)}</span> per{" "}
+            {perUnit} · ≈ {Math.max(0, Math.floor(balance / cost))} {perUnit}s left
+          </div>
+        </div>
+      </div>
+
+      {/* Recharge — adds to the existing balance */}
+      <div className="flex items-end gap-2">
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-medium text-body">
+            Add to balance (₹)
+          </span>
+          <div className="relative">
+            <IndianRupee
+              size={14}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-subtle"
+            />
+            <input
+              value={amount}
+              onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))}
+              onKeyDown={(e) => e.key === "Enter" && !busy && add()}
+              inputMode="decimal"
+              placeholder="500"
+              className="w-32 rounded-lg border border-line bg-white py-2 pl-7 pr-3 text-sm text-ink outline-none focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+            />
+          </div>
+        </label>
+        <button
+          onClick={add}
+          disabled={busy}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50"
+        >
+          {busy ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
+          Recharge
+        </button>
       </div>
     </div>
   );
