@@ -1,7 +1,99 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ════════════════ Modern SaaS Professional design system ════════════════ */
+:root {
+  --c-primary: #36b76b;
+  --c-primary-light: #d4f1e0;
+  --c-secondary: #f4a13a;
+  --c-ink: #111827;
+  --c-body: #6b7280;
+  --c-subtle: #9ca3af;
+  --c-line: #e5e7eb;
+  --c-canvas: #f9fafb;
+}
+
+body {
+  color: var(--c-ink);
+}
+
+/* Reusable surface + typography helpers (1px borders, no heavy shadows). */
+@layer components {
+  .surface {
+    @apply rounded-xl border border-line bg-white shadow-card;
+  }
+  /* Strict 20px internal padding for card content (spec: p-5). */
+  .surface-pad {
+    @apply rounded-xl border border-line bg-white p-5 shadow-card;
+  }
+  .page-title {
+    @apply text-[22px] font-bold tracking-[-0.025em] text-ink;
+  }
+  .page-subtitle {
+    @apply text-[13px] text-body;
+  }
+  .card-heading {
+    @apply text-[14px] font-semibold text-ink;
+  }
+  .metric-headline {
+    @apply text-[28px] font-bold tracking-[-0.05em] text-ink;
+  }
+  .micro {
+    @apply text-[11px] text-subtle;
+  }
+  /* Pill trend badge — positive (green) / negative (red). */
+  .trend-badge {
+    @apply inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-semibold;
+  }
+  .trend-up {
+    @apply bg-brand-100 text-brand-600;
+  }
+  .trend-down {
+    @apply bg-red-50 text-red-500;
+  }
+}
+
+/* Staggered "wave" entrance — pair with inline animationDelay. */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes growUp {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.anim-fade-up {
+  animation: fadeInUp 0.5s ease-out both;
+}
+.anim-slide-in {
+  animation: slideInLeft 0.4s ease-out both;
+}
+.anim-grow {
+  transform-origin: bottom;
+  animation: growUp 0.6s ease-out both;
+}
 
 /* ════════════════ Xan CRM theme (scoped to .xan) ════════════════ */
 .xan {

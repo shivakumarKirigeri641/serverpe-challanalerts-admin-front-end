@@ -195,15 +195,15 @@ export default function ResourcePage() {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold text-slate-900">
+          <h1 className="flex items-center gap-2 page-title">
             {meta?.label || resource}
             {meta?.readonly && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">
+              <span className="inline-flex items-center gap-1 rounded-full bg-hover px-2 py-0.5 text-xs font-medium text-body">
                 <Lock size={12} /> read-only
               </span>
             )}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="page-subtitle">
             {pageMeta.total} record{pageMeta.total === 1 ? "" : "s"} ·{" "}
             <span className="font-mono">{meta?.table}</span>
           </p>
@@ -262,9 +262,9 @@ export default function ResourcePage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white thin-scroll">
+      <div className="surface overflow-x-auto thin-scroll anim-fade-up">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <thead className="bg-canvas text-xs uppercase tracking-wide text-subtle">
             <tr>
               {hasChildren && <th className="w-8 px-2 py-2" />}
               {columns.map((col) => (
@@ -275,12 +275,12 @@ export default function ResourcePage() {
                   {col.label}
                 </th>
               ))}
-              <th className="sticky right-0 bg-slate-50 px-3 py-2 text-right">
+              <th className="sticky right-0 bg-canvas px-3 py-2 text-right">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-line-light">
             {loading ? (
               <tr>
                 <td colSpan={totalCols} className="px-3 py-8 text-center text-slate-400">

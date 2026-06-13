@@ -25,14 +25,14 @@ const inr2 = (n) =>
 
 function Kpi({ icon: Icon, label, value, color }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+    <div className="surface-pad anim-fade-up">
       <div
         className={`mb-2 inline-flex h-9 w-9 items-center justify-center rounded-lg text-white ${color}`}
       >
         <Icon size={18} />
       </div>
-      <div className="text-2xl font-bold text-slate-900">{value}</div>
-      <div className="text-xs text-slate-500">{label}</div>
+      <div className="text-2xl font-bold tracking-[-0.03em] text-ink">{value}</div>
+      <div className="text-xs text-body">{label}</div>
     </div>
   );
 }
@@ -49,8 +49,8 @@ export default function Analytics() {
   }, []);
 
   if (loading)
-    return <div className="text-slate-500">Loading analytics…</div>;
-  if (!a) return <div className="text-slate-500">No analytics available.</div>;
+    return <div className="text-body">Loading analytics…</div>;
+  if (!a) return <div className="text-body">No analytics available.</div>;
 
   const k = a.kpis || {};
   const r = a.revenue || {};
@@ -71,8 +71,8 @@ export default function Analytics() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="page-title">Analytics</h1>
+        <p className="page-subtitle">
           Platform performance — users, vehicles, logins, turnover &amp; billing.
         </p>
       </div>
@@ -178,8 +178,10 @@ export default function Analytics() {
 
       {/* ─────────────── Cost & operations (admin-only spend) ─────────────── */}
       <div className="pt-2">
-        <h2 className="text-lg font-bold text-slate-900">Cost &amp; operations</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-lg font-bold tracking-[-0.02em] text-ink">
+          Cost &amp; operations
+        </h2>
+        <p className="page-subtitle">
           External API spend (RC ≈ ₹2.9/call) and notification spend
           (WhatsApp ₹0.118 · SMS ₹0.25).
         </p>
@@ -266,11 +268,11 @@ export default function Analytics() {
 
 function Stat({ label, value }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-3">
-      <div className="text-[11px] uppercase tracking-wide text-slate-400">
+    <div className="rounded-xl bg-canvas p-3">
+      <div className="text-[11px] uppercase tracking-wide text-subtle">
         {label}
       </div>
-      <div className="mt-0.5 text-lg font-semibold text-slate-800">{value}</div>
+      <div className="mt-0.5 text-lg font-semibold text-ink">{value}</div>
     </div>
   );
 }

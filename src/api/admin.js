@@ -18,6 +18,11 @@ export const getDashboardStats = () =>
 export const getRevenueDetails = () =>
   request(api.get("/dashboard/revenue")).then((r) => r.data);
 
+/* Redesigned dashboard overview — metrics w/ deltas, 7-day activity,
+   growth/retention, plan performance. */
+export const getDashboardOverview = () =>
+  request(api.get("/dashboard/overview")).then((r) => r.data);
+
 export const getAnalytics = () =>
   request(api.get("/analytics")).then((r) => r.data);
 

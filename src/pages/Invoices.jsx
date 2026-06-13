@@ -54,7 +54,7 @@ const onSpot = (e) => {
 
 export default function Invoices() {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [rows, setRows] = useState([]);
   const [meta, setMeta] = useState({ page: 1, total_pages: 1, total: 0 });
   const [page, setPage] = useState(1);

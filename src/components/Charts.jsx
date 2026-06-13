@@ -4,13 +4,11 @@ import React from "react";
 
 export function Card({ title, subtitle, children, className = "" }) {
   return (
-    <div
-      className={`rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100 ${className}`}
-    >
+    <div className={`surface-pad anim-fade-up ${className}`}>
       {title && (
         <div className="mb-3">
-          <h3 className="text-sm font-semibold text-slate-800">{title}</h3>
-          {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
+          <h3 className="card-heading">{title}</h3>
+          {subtitle && <p className="micro">{subtitle}</p>}
         </div>
       )}
       {children}
@@ -18,17 +16,18 @@ export function Card({ title, subtitle, children, className = "" }) {
   );
 }
 
+// Green/orange-led palette to match the design system.
 const PALETTE = [
-  "#6366F1",
-  "#22C55E",
-  "#F59E0B",
-  "#06B6D4",
-  "#EC4899",
-  "#8B5CF6",
-  "#EF4444",
-  "#14B8A6",
-  "#3B82F6",
-  "#A3A3A3",
+  "#36B76B",
+  "#F4A13A",
+  "#4CC07D",
+  "#F7B968",
+  "#26804B",
+  "#E08C26",
+  "#7DD5A3",
+  "#9CA3AF",
+  "#2E9E5C",
+  "#FCE4C4",
 ];
 
 /** Vertical bar chart. data: [{ label, value }]. Supports a 2nd series. */
@@ -42,18 +41,19 @@ export function BarChart({ data, format = (v) => v, height = 160 }) {
         const h = ((Number(d.value) || 0) / max) * (height - 34);
         return (
           <div key={i} className="flex min-w-[34px] flex-1 flex-col items-center">
-            <div className="mb-1 text-[10px] font-medium text-slate-500">
+            <div className="mb-1 text-[10px] font-medium text-body">
               {format(d.value)}
             </div>
             <div
-              className="w-full rounded-t-md transition-all"
+              className="anim-grow w-full rounded-t-md"
               style={{
                 height: Math.max(h, 2),
                 background: PALETTE[i % PALETTE.length],
+                animationDelay: `${i * 0.05}s`,
               }}
               title={`${d.label}: ${format(d.value)}`}
             />
-            <div className="mt-1 w-full truncate text-center text-[10px] text-slate-400">
+            <div className="mt-1 w-full truncate text-center text-[10px] text-subtle">
               {d.label}
             </div>
           </div>
@@ -71,19 +71,19 @@ export function HBarChart({ data, format = (v) => v }) {
     <div className="space-y-2">
       {data.map((d, i) => (
         <div key={i} className="flex items-center gap-2">
-          <div className="w-28 shrink-0 truncate text-xs text-slate-600" title={d.label}>
+          <div className="w-28 shrink-0 truncate text-xs text-body" title={d.label}>
             {d.label}
           </div>
-          <div className="h-4 flex-1 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-hover">
             <div
-              className="h-full rounded-full"
+              className="h-full rounded-full transition-[width] duration-700 ease-out"
               style={{
                 width: `${((Number(d.value) || 0) / max) * 100}%`,
                 background: PALETTE[i % PALETTE.length],
               }}
             />
           </div>
-          <div className="w-16 shrink-0 text-right text-xs font-medium text-slate-700">
+          <div className="w-16 shrink-0 text-right text-xs font-semibold text-ink">
             {format(d.value)}
           </div>
         </div>
@@ -108,11 +108,11 @@ export function LineChart({ data, format = (v) => v, height = 160 }) {
   return (
     <div className="overflow-x-auto thin-scroll">
       <svg width={w} height={height}>
-        <path d={area} fill="#6366F133" />
-        <path d={path} fill="none" stroke="#6366F1" strokeWidth="2" />
+        <path d={area} fill="#36B76B22" />
+        <path d={path} fill="none" stroke="#36B76B" strokeWidth="2" />
         {pts.map((p, i) => (
           <g key={i}>
-            <circle cx={p[0]} cy={p[1]} r="3" fill="#6366F1" />
+            <circle cx={p[0]} cy={p[1]} r="3" fill="#36B76B" />
             <text x={p[0]} y={height - 6} textAnchor="middle" fontSize="9" fill="#94a3b8">
               {data[i].label}
             </text>

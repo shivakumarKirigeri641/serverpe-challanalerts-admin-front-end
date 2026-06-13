@@ -14,14 +14,14 @@ import { getRecentActivity } from "../api/admin";
 const POLL_MS = 7000; // poll cadence
 
 const TYPE_META = {
-  subscribe: { icon: UserPlus, color: "bg-emerald-500" },
-  login: { icon: LogIn, color: "bg-blue-500" },
-  payment: { icon: CreditCard, color: "bg-violet-500" },
-  feedback: { icon: MessageSquare, color: "bg-pink-500" },
-  contact: { icon: Mail, color: "bg-rose-500" },
-  visit: { icon: Eye, color: "bg-slate-400" },
-  invoice: { icon: FileText, color: "bg-amber-500" },
-  other: { icon: Activity, color: "bg-slate-400" },
+  subscribe: { icon: UserPlus, color: "bg-brand-600" },
+  login: { icon: LogIn, color: "bg-brand-500" },
+  payment: { icon: CreditCard, color: "bg-accent-500" },
+  feedback: { icon: MessageSquare, color: "bg-brand-500" },
+  contact: { icon: Mail, color: "bg-accent-600" },
+  visit: { icon: Eye, color: "bg-subtle" },
+  invoice: { icon: FileText, color: "bg-accent-500" },
+  other: { icon: Activity, color: "bg-subtle" },
 };
 
 const maskMobile = (m) =>
@@ -88,18 +88,18 @@ export default function LiveActivity() {
   };
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+    <div className="surface-pad anim-slide-in self-start">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-slate-800">Live activity</h3>
+          <h3 className="card-heading">Live activity</h3>
           <span
             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-              live ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-400"
+              live ? "bg-brand-100 text-brand-700" : "bg-hover text-subtle"
             }`}
           >
             <span
               className={`h-1.5 w-1.5 rounded-full ${
-                live ? "animate-pulse bg-emerald-500" : "bg-slate-300"
+                live ? "animate-pulse bg-brand-600" : "bg-subtle"
               }`}
             />
             {live ? "LIVE" : "PAUSED"}
@@ -107,7 +107,7 @@ export default function LiveActivity() {
         </div>
         <button
           onClick={toggleLive}
-          className="text-xs font-medium text-slate-500 hover:text-slate-800"
+          className="text-xs font-medium text-body hover:text-ink"
         >
           {live ? "Pause" : "Resume"}
         </button>
@@ -115,7 +115,7 @@ export default function LiveActivity() {
 
       <div className="max-h-[420px] space-y-1.5 overflow-y-auto thin-scroll pr-1">
         {events.length === 0 ? (
-          <div className="flex h-24 items-center justify-center text-xs text-slate-400">
+          <div className="flex h-24 items-center justify-center text-xs text-subtle">
             Waiting for activity…
           </div>
         ) : (
@@ -126,7 +126,7 @@ export default function LiveActivity() {
             return (
               <div
                 key={e.id}
-                className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-slate-50"
+                className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-hover"
               >
                 <span
                   className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg text-white ${meta.color}`}
@@ -134,21 +134,21 @@ export default function LiveActivity() {
                   <Icon size={14} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium text-slate-800">
+                  <div className="truncate text-sm font-medium text-ink">
                     {e.label}
                     {!e.ok && (
-                      <span className="ml-1 text-[10px] font-medium text-rose-500">
+                      <span className="ml-1 text-[10px] font-medium text-red-500">
                         ({e.status_code})
                       </span>
                     )}
                   </div>
-                  <div className="truncate text-[11px] text-slate-400">
+                  <div className="truncate text-[11px] text-subtle">
                     {[who, e.vehicle_number, e.device]
                       .filter(Boolean)
                       .join(" · ")}
                   </div>
                 </div>
-                <div className="shrink-0 text-[11px] text-slate-400">
+                <div className="shrink-0 text-[11px] text-subtle">
                   {timeAgo(e.at)}
                 </div>
               </div>
