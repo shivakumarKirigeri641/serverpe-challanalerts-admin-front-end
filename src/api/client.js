@@ -1,9 +1,19 @@
 import axios from "axios";
 import { cryptoEnabled, encryptPayload, decryptPayload } from "./crypto";
 
+// Admin API path on the backend. The host comes from env so the same build
+// points at localhost in dev and the live API in production.
+const ADMIN_PATH = "/vehicleowneralerts/platform/admin";
+
 const baseURL =
+  // 1) Full base URL (host + path) — explicit override, wins if set.
   process.env.REACT_APP_API_BASE_URL ||
-  "http://localhost:7777/vehicleowneralerts/platform/admin";
+  // 2) Host root only (e.g. https://api.alertmyvahan.in) — the admin path is
+  //    appended. This is what production deployment sets.
+  (process.env.REACT_APP_API_URL
+    ? `${process.env.REACT_APP_API_URL.replace(/\/+$/, "")}${ADMIN_PATH}`
+    : // 3) Local fallback — same backend as everything else.
+      `http://localhost:7777${ADMIN_PATH}`);
 
 const TOKEN_KEY = "amv_admin_token";
 
